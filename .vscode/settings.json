@@ -1,0 +1,11 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.wordWrap": "off",
+    "editor.minimap.autohide": true,
+    "editor.minimap.renderCharacters": false,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true
+    }
+}
