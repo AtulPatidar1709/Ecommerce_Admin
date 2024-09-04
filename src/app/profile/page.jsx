@@ -8,21 +8,18 @@ const Page = () => {
   const router = useRouter();
 
   async function signout() {
-    await signOut({ callbackUrl: "/sign-in" }); // Use callbackUrl to redirect after sign out
+    await signOut({ callbackUrl: "/sign-in" });
   }
 
   if (status === "loading") {
-    // Handle loading state
     return <div>Loading...</div>;
   }
 
   if (!session) {
-    // If user is not authenticated, redirect to the sign-in page
     router.push("/sign-in");
-    return null; // Prevent further rendering
+    return null;
   }
 
-  // Fetch user data from session object
   const user = session.user;
 
   return (
@@ -31,7 +28,6 @@ const Page = () => {
       {user && (
         <div>
           <p>User Email: {user.email}</p>
-          {/* Add more user details here if needed */}
         </div>
       )}
       <button onClick={signout}>Sign out</button>

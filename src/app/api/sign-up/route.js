@@ -1,29 +1,44 @@
-import { dbConnect } from "@/lib/dbConnect"; // Fixed typo in import
+import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/user";
 import { NextResponse } from "next/server";
-import { hash } from "bcryptjs"; // Fixed incorrect import
+import { hash } from "bcryptjs";
 
 export async function POST(req) {
   try {
-    await dbConnect(); // Fixed typo
-    const { name, email, password } = await req.json();
+    await dbConnect();
 
-    const exists = await User.findOne({ email });
+    const { name, email, password, googleId } = await req.json();
 
-    if (exists) {
+    // Check if email already exists
+    const existsEmail = await User.findOne({ email });
+
+    // Check if googleId exists and is not null
+    const existsGoogleId = googleId && (await User.findOne({ googleId }));
+
+    if (existsEmail) {
       return NextResponse.json(
         {
           message: "User or Email already exists",
         },
-        { status: 400 } // Status code for a bad request
+        { status: 400 }
       );
     }
 
-    const hashedPassword = await hash(password, 8); // Corrected `bcrypt` usage
+    if (existsGoogleId) {
+      return NextResponse.json(
+        {
+          message: "Google ID already exists",
+        },
+        { status: 400 }
+      );
+    }
+
+    const hashedPassword = await hash(password, 8);
     await User.create({
       name,
       email,
       password: hashedPassword,
+      googleId,
     });
 
     return NextResponse.json(

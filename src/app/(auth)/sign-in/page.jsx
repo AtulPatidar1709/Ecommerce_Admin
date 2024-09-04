@@ -15,7 +15,7 @@ const Page = () => {
     password: "",
   });
 
-  const [buttonDisable, setButtonDisable] = useState(false);
+  const [buttonDisable, setButtonDisable] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const onSignup = async (event) => {
@@ -23,11 +23,13 @@ const Page = () => {
 
     try {
       setLoading(true);
-      const response = await signIn("Credentials", {
+      const response = await signIn("credentials", {
         email: user.email,
         password: user.password,
         redirect: false,
       });
+
+      // console.log("SignIn response:", response);
 
       if (response?.ok) {
         router.push("/profile");
@@ -39,18 +41,14 @@ const Page = () => {
       toast.error(
         "Something Went Wrong: " + (error.message || "Unknown error")
       );
-      console.error("Error in Frontend:", error);
+      // console.error("Error in Frontend:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
-      setButtonDisable(false);
-    } else {
-      setButtonDisable(true);
-    }
+    setButtonDisable(!(user.email.length > 0 && user.password.length > 0));
   }, [user]);
 
   if (loading) {
@@ -63,10 +61,12 @@ const Page = () => {
 
   const signupGoogle = async () => {
     try {
-      const googleData = await signIn("google", { callbackUrl: "/profile" }); // Sign in with Google and redirect to home
-      console.log("this is my data :" + googleData);
+      const googleData = await signIn("google", {
+        callbackUrl: "/",
+      });
     } catch (error) {
       toast.error("Failed to sign up with Google.");
+      // console.error("Google sign-in error:", error);
     }
   };
 
@@ -116,19 +116,19 @@ const Page = () => {
           >
             {buttonDisable ? "Please Enter all Fields" : "Log In"}
           </button>
-          <div className="w-full h-px bg-gray-300 my-4"></div>
-          <p className="text-center text-base">
-            <span className="font-inter font-normal">
-              Don’t have an Account?{" "}
-            </span>
-            <Link
-              href={"/sign-up"}
-              className="text-black font-bold hover:underline"
-            >
-              SIGN UP
-            </Link>
-          </p>
         </form>
+        <div className="w-full h-px bg-gray-300 my-4"></div>
+        <p className="text-center text-base">
+          <span className="font-inter font-normal">
+            Don’t have an Account?{" "}
+          </span>
+          <Link
+            href={"/sign-up"}
+            className="text-black font-bold hover:underline"
+          >
+            SIGN UP
+          </Link>
+        </p>
         <div className="flex items-center justify-center">
           <button
             onClick={signupGoogle}

@@ -13,15 +13,15 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "", // Default to an empty string if no image is provided
+      default: "",
     },
     password: {
       type: String,
     },
     googleId: {
-      type: String, // Used to store the Google user ID
-      unique: true, // Ensure googleId is unique
-      sparse: true, // Allow multiple users with null values for googleId
+      type: String,
+      unique: true,
+      sparse: true,
     },
     isAdmin: {
       type: Boolean,

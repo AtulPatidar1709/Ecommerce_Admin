@@ -10,11 +10,11 @@ export async function middleware(request) {
   });
 
   if (token && (url.pathname === "/sign-in" || url.pathname === "/sign-up")) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   if (!token && url.pathname === "/profile") {
-    console.log(`Redirecting unauthenticated user to /sign-in`);
+    // console.log(`Redirecting unauthenticated user to /sign-in`);
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 

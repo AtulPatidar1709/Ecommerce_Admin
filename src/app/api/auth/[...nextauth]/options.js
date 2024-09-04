@@ -10,18 +10,16 @@ export const authOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
-      name: "Credentials",
+      name: "credentials",
       credentials: {
         email: { label: "email", type: "text", placeholder: "User Email" },
         password: { label: "password", type: "password" },
       },
-      async authorize(credentials, req) {
-        console.log(credentials);
-        await dbConnect();
+      async authorize(credentials) {
         try {
           const user = await User.findOne({ email: credentials.email });
           if (!user) {
-            throw new Error("No User Found with this Email or name");
+            throw new Error("No User Found with this Email");
           }
 
           const isPasswordCorrect = await bcrypt.compare(
@@ -30,7 +28,12 @@ export const authOptions = {
           );
 
           if (isPasswordCorrect) {
-            return user;
+            return {
+              id: user._id,
+              email: user.email,
+              name: user.name,
+              image: user?.image || "",
+            }; // Return user with necessary fields
           } else {
             throw new Error("Incorrect Password");
           }
@@ -40,46 +43,46 @@ export const authOptions = {
       },
     }),
     GoogleProvider({
-      clientId: process.env.GOOOGLE_ID,
-      clientSecret: process.env.GOOOGLE_SECRET,
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      await dbConnect(); // Ensure the database is connected
-
+    async signIn({ user, account }) {
+      await dbConnect();
       if (account.provider === "google") {
         const existingUser = await User.findOne({ email: user.email });
 
         if (!existingUser) {
           try {
-            // Create a new user with googleId
             await User.create({
               name: user.name,
               email: user.email,
-              googleId: account.id, // Use the Google account ID as googleId
-              image: user.image, // Save the profile image if available
+              googleId: account.id,
+              image: user.image,
             });
           } catch (error) {
-            console.error("Error creating user:", error);
             throw new Error("Failed to create user.");
           }
         }
       }
-
-      return true; // Return true to indicate successful sign-in
+      return true;
     },
     async jwt({ token, user }) {
       if (user) {
-        token._id = user._id?.toString();
+        token._id = user.id;
+        token.name = user.name;
         token.email = user.email;
+        token.image = user.image;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user._id = token._id;
+        session.user.name = token.name;
         session.user.email = token.email;
+        session.user.image = token.image;
       }
       return session;
     },
@@ -88,7 +91,7 @@ export const authOptions = {
     signIn: "/sign-in",
   },
   session: {
-    strategy: "jwt", // Use "jwt" for token-based sessions
+    strategy: "jwt",
   },
   secret: process.env.NEXT_AUTH_SECRET,
 };

@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 export async function GET(req) {
   try {
     await dbConnect();
-    // console.log(`Login with Db Database`);
     return NextResponse.json(
       {
         message: "Login with Db Database",

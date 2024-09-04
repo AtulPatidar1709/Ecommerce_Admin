@@ -21,19 +21,17 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
 
   const onSignup = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
-    if (!user.name || !user.email || !user.password) {
-      toast.error("Please Enter All Fields");
-    }
+    event.preventDefault();
     try {
-      setLoading(true);
       const response = await axios.post("/api/sign-up", user);
-      toast.success("User Registerd Successfully");
-      setLoading(false);
-      router.push(`/sign-in`);
+      if (response.status === 201) {
+        toast.success("User Registered Successfully");
+        router.push(`/sign-in`);
+      } else {
+        toast.error(response.data.message || "Registration failed.");
+      }
     } catch (error) {
-      setLoading(false);
-      toast.error(error.message || "An error occurred during signup.");
+      toast.error(error.response?.data?.message || "An error occurred.");
     }
   };
 
@@ -57,16 +55,20 @@ const Page = () => {
     );
   }
 
-  // const signupGoogle = async () => {
-  //   try {
-  //     await signIn("google", { callbackUrl: "/profile" }); // Sign in with Google and redirect to home
-  //   } catch (error) {
-  //     toast.error("Failed to sign up with Google.");
-  //   }
-  // };
+  const signupGoogle = async () => {
+    try {
+      const googleData = await signIn("google", {
+        callbackUrl: "/profile",
+      });
+      // console.log("Google sign-in response:", googleData);
+    } catch (error) {
+      toast.error("Failed to sign up with Google.");
+      console.error("Google sign-in error:", error);
+    }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center h-[80vh] bg-white">
+    <div className="flex flex-col justify-center items-center h-screen bg-white">
       <div className=" w-full sm:w-3/4 md:w-2/3 lg:w-1/3 xl:w-1/4  p-4 mx-auto rounded-lg border border-gray-300 bg-white shadow-lg max-w-[90%]">
         <form
           onSubmit={onSignup}
@@ -127,13 +129,22 @@ const Page = () => {
           <p className="text-center pt-6 text-sm sm:text-base">
             <span className="font-normal">Have an Account? </span>
             <Link
-              href={"/login"}
+              href={"/sign-in"}
               className="text-black font-bold hover:underline"
             >
               LOGIN
             </Link>
           </p>
         </form>
+        <div className="flex items-center justify-center">
+          <button
+            onClick={signupGoogle}
+            className="bg-black text-white flex gap-4 p-3 justify-center items-center"
+          >
+            <span>Sign Up using</span>
+            <FcGoogle height={20} width={20} />
+          </button>
+        </div>
       </div>
     </div>
   );
