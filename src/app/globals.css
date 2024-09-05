@@ -21,6 +21,22 @@ label {
   @apply text-blue-600 font-bold;
 }
 
-button {
-  @apply text-white py-2 px-3 bg-black rounded-md;
+.btn-primary {
+  @apply text-white py-1 px-2 bg-black rounded-md;
+}
+
+table.basic {
+  @apply w-full;
+}
+
+table.basic thead tr td {
+  @apply bg-blue-100;
+}
+
+table.basic tr td {
+  @apply border border-gray-300 p-2;
+}
+
+table.basic a {
+  @apply bg-blue-900 text-white text-sm py-1 px-2 rounded-md;
 }
