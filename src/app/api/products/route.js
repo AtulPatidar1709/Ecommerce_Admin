@@ -1,17 +1,17 @@
 import { dbConnect } from '@/lib/dbConnect';
 import { NextResponse } from 'next/server';
-import { hash } from 'bcryptjs';
 import Product from '@/models/products';
 
 await dbConnect();
 
 export async function POST(req) {
-  const { title, description, price } = await req.json();
+  const { title, description, price, imageIds } = await req.json();
 
   const productDoc = await Product.create({
     title,
     description,
     price,
+    imageIds, // Add imageIds to the product
   });
 
   return NextResponse.json(
@@ -45,7 +45,7 @@ export async function GET(req) {
 }
 
 export async function PUT(req) {
-  const { title, description, price, _id } = await req.json();
+  const { title, description, price, _id, imageIds } = await req.json();
 
   const productDoc = await Product.updateOne(
     { _id },
@@ -53,6 +53,7 @@ export async function PUT(req) {
       title,
       description,
       price,
+      imageIds, // Add imageIds to the update
     }
   );
 

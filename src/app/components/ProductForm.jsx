@@ -1,8 +1,10 @@
 'use client';
 import axios from 'axios';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { CldUploadWidget } from 'next-cloudinary';
 
 const ProductForm = ({
   title: existingTitle = '',
@@ -10,12 +12,14 @@ const ProductForm = ({
   price: existingPrice = '',
   _id,
   Heading,
-  images,
+  imageIds, // Use default empty array if no images prop is provided
 }) => {
   // Initialize state with props
   const [title, setTitle] = useState(existingTitle || '');
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
+  const [newimageIds, setNewImageIds] = useState(imageIds || []); // State to hold image IDs from Cloudinary
+  const [uploading, setUploading] = useState(false); // State for loading indicator during image upload
 
   const route = useRouter();
 
@@ -30,14 +34,16 @@ const ProductForm = ({
     if (price < 0) {
       return toast.error('Please enter a positive price.');
     }
-    const data = { title, description, price };
+
+    const data = { title, description, price, imageIds: newimageIds };
 
     try {
       let res;
       if (_id) {
-        //Update Product
+        // Update Product
         res = await axios.put('/api/products', { ...data, _id });
       } else {
+        // Create Product
         res = await axios.post('/api/products', data);
       }
 
@@ -46,6 +52,7 @@ const ProductForm = ({
         setDescription('');
         setTitle('');
         setPrice('');
+        setNewImageIds([]); // Clear images after saving
         route.push('/products');
       }
     } catch (error) {
@@ -53,22 +60,13 @@ const ProductForm = ({
     }
   };
 
-  const uploadImages = async (ev) => {
-    const files = ev?.target?.files;
-    try {
-      if (files?.length > 0) {
-        const data = new FormData();
-        for (const file of files) {
-          data.append('file', file);
-        }
-        const res = await axios.post('/api/uploaddata', data);
-        if (res.data) {
-          toast.success('Uploaded Successfully.');
-        }
-      }
-    } catch (error) {
-      console.error('Error uploading images:', error);
-      toast.error('Error in Upload Images');
+  // Handle successful upload
+  const handleUploadSuccess = (result) => {
+    if (result?.info?.public_id) {
+      setNewImageIds((prev) => [...prev, result.info.public_id]); // Update state with new image ID
+      toast.success('Image uploaded successfully.');
+    } else {
+      toast.error('Error uploading image.');
     }
   };
 
@@ -83,38 +81,37 @@ const ProductForm = ({
             onChange={(e) => setTitle(e.target.value)}
             value={title || ''}
             type="text"
-            className=""
             placeholder="Product Name"
           />
         </div>
-        <div className="flex flex-col mb-2">
-          <label htmlFor="product-photos">Product Photos</label>
-          <div className="flex relative flex-row gap-1">
-            <label className="w-24 h-24 cursor-pointer border text-center flex flex-col items-center justify-center text-sm gap-1 bg-gray-200 text-gray-500 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6"
+        <div>
+          <CldUploadWidget
+            uploadPreset="ptqeubac"
+            onSuccess={handleUploadSuccess} // Handle successful upload
+          >
+            {({ open }) => (
+              <button
+                type="button" // Ensure it doesn't trigger form submission
+                onClick={() => open()}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                />
-              </svg>
-              <input
-                onChange={uploadImages}
-                className="hidden"
-                type="file"
-                multiple
-                name="productPhotos"
-              />
-            </label>
-          </div>
-          <div>{!images?.length && <div>No Photos in this Product</div>}</div>
+                Upload an Image
+              </button>
+            )}
+          </CldUploadWidget>
+        </div>
+        <div className="flex flex-row gap-3">
+          {!newimageIds.length && <div>No Photos in this Product</div>}
+          {newimageIds.map((id) => (
+            <Image
+              className="object-contain"
+              key={id}
+              src={`https://res.cloudinary.com/dryapqold/image/upload/${id}`}
+              alt="Product"
+              width={120}
+              height={96}
+            />
+          ))}
+          {uploading && <div>Uploading...</div>}
         </div>
         <div className="flex flex-col">
           <label htmlFor="product-description">Product Description</label>
@@ -122,7 +119,6 @@ const ProductForm = ({
             id="product-description"
             value={description || ''}
             onChange={(e) => setDescription(e.target.value)}
-            className=""
             placeholder="Product Description"
           />
         </div>
@@ -133,11 +129,10 @@ const ProductForm = ({
             type="number"
             onChange={(e) => setPrice(e.target.value)}
             value={price || ''}
-            className=""
             placeholder="Product Price"
           />
         </div>
-        <button type="submit">Create Product</button>
+        <button type="submit">Save Product</button>
       </form>
     </div>
   );
