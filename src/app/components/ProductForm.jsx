@@ -6,6 +6,8 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { AiFillDelete } from 'react-icons/ai'; // Import delete icon
+import Loader from './Loader/page';
+import { ReactSortable } from 'react-sortablejs';
 
 const ProductForm = ({
   title: existingTitle = '',
@@ -33,7 +35,7 @@ const ProductForm = ({
     }
 
     if (price < 0) {
-      return toast.error('Please enter a positive price.');
+      return toast.error('Please enter a valid price.');
     }
 
     const data = { title, description, price, imageIds: newimageIds };
@@ -139,7 +141,7 @@ const ProductForm = ({
                 src={`https://res.cloudinary.com/dryapqold/image/upload/${id}`}
                 alt="Product"
                 width={120}
-                height={96}
+                height={0}
               />
               {/* Delete Icon */}
               <button
@@ -165,7 +167,11 @@ const ProductForm = ({
               </button>
             </div>
           ))}
-          {uploading && <div>Uploading...</div>}
+          {uploading && (
+            <div>
+              <Loader />
+            </div>
+          )}
         </div>
         <div className="flex flex-col">
           <label htmlFor="product-description">Product Description</label>
@@ -186,7 +192,9 @@ const ProductForm = ({
             placeholder="Product Price"
           />
         </div>
-        <button type="submit">Save Product</button>
+        <button className="btn-primary" type="submit">
+          Save Product
+        </button>
       </form>
     </div>
   );

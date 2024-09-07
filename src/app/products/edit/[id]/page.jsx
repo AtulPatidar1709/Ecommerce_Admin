@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/app/components/Loader/page';
 import ProductForm from '@/app/components/ProductForm';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
@@ -34,8 +35,10 @@ const Page = () => {
   return (
     <div>
       {/* <h1 className="flex font-bold text-2xl">Edit Product Info</h1> */}
-      {productDetails && (
+      {productDetails ? (
         <ProductForm Heading="Edit Product Details" {...productDetails} />
+      ) : (
+        <Loader />
       )}
     </div>
   );

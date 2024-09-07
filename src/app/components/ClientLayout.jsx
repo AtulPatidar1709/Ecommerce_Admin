@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Header from "./Header";
+import { usePathname } from 'next/navigation';
+import Header from './Header';
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname(); // Get the current pathname
 
   // Check if the current page is "sign-in" or "sign-up"
-  const showHeader = pathname !== "/sign-in" && pathname !== "/sign-up";
+  const showHeader = pathname !== '/sign-in' && pathname !== '/sign-up';
 
   return (
     <>

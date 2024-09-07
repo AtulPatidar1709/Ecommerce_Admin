@@ -1,5 +1,5 @@
 {
-    "files.autoSave": "afterDelay",
+    "files.autoSave": "off",
     "editor.wordWrap": "off",
     "editor.minimap.autohide": true,
     "editor.minimap.renderCharacters": false,
@@ -11,4 +11,5 @@
     "css.customData": [
         ".vscode/tailwind.json"
     ],
+    "files.autoSaveDelay": 5000000,
 }

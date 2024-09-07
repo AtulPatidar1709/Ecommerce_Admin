@@ -1,4 +1,5 @@
 'use client';
+
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -38,22 +39,24 @@ const Page = () => {
         </Link>
       </div>
       <div>
-        <table className="basic">
+        <table className="basic w-full border-collapse border border-gray-200">
           <thead>
-            <tr>
-              <td>Product Name</td>
-              <td></td>
+            <tr >
+              <th className="border border-gray-200 p-2">Product Name</th>
+              <th className="border border-gray-200 p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {Array.isArray(products) &&
               products.map((product) => (
                 <tr key={product._id}>
-                  <td>{product.title}</td>
-                  <td className="flex gap-2">
+                  <td className="border border-gray-200 p-2">
+                    {product.title}
+                  </td>
+                  <td className="flex gap-4 p-2">
                     <Link
-                      className="flex items-center"
-                      href={`/products/edit/` + product._id}
+                      className="flex items-center text-blue-500 hover:text-blue-700"
+                      href={`/products/edit/${product._id}`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +64,7 @@ const Page = () => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-4"
+                        className="w-5 h-5 mr-1"
                       >
                         <path
                           strokeLinecap="round"
@@ -72,8 +75,8 @@ const Page = () => {
                       Edit
                     </Link>
                     <Link
-                      className="flex items-center"
-                      href={`/products/delete/` + product._id}
+                      className="flex items-center text-red-500 hover:text-red-700"
+                      href={`/products/delete/${product._id}`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +84,7 @@ const Page = () => {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-4"
+                        className="w-5 h-5 mr-1"
                       >
                         <path
                           strokeLinecap="round"

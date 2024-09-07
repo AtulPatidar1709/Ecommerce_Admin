@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Header = () => {
   const pathname = usePathname();
 
-  const inactiveLink = "flex gap-1";
+  const inactiveLink = 'flex gap-1';
 
   const activeLink =
-    "flex gap-1 bg-white py-1 pl-4 text-black border-1 w-full rounded-l-lg  border-black ";
+    'flex gap-1 bg-white py-1 pl-4 text-black border-1 w-full rounded-l-lg  border-black ';
 
   return (
     <aside className="text-white p-4 min-w-max">
       <a className="flex items-center gap-3" href="">
         <Image
+          className="object-contain"
           src="/assets/images/icon.png"
           width={30}
           height={30}
@@ -24,7 +25,7 @@ const Header = () => {
         <span className="flex flex-col items-center">Ecommerce Admin</span>
       </a>
       <nav className="flex flex-col pt-3 gap-2">
-        <Link className={pathname === "/" ? activeLink : inactiveLink} href="/">
+        <Link className={pathname === '/' ? activeLink : inactiveLink} href="/">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -37,7 +38,7 @@ const Header = () => {
           Dashboard
         </Link>
         <Link
-          className={pathname === "/products" ? activeLink : inactiveLink}
+          className={pathname === '/products' ? activeLink : inactiveLink}
           href="/products"
         >
           <svg
@@ -57,8 +58,28 @@ const Header = () => {
           Products
         </Link>
         <Link
-          className={pathname === "/orders" ? activeLink : inactiveLink}
-          href={"/orders"}
+          className={pathname === '/categories' ? activeLink : inactiveLink}
+          href="/categories"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
+            />
+          </svg>
+          Categories
+        </Link>
+        <Link
+          className={pathname === '/orders' ? activeLink : inactiveLink}
+          href={'/orders'}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +98,7 @@ const Header = () => {
           Orders
         </Link>
         <Link
-          className={pathname === "/settings" ? activeLink : inactiveLink}
+          className={pathname === '/settings' ? activeLink : inactiveLink}
           href="/settings"
         >
           <svg
