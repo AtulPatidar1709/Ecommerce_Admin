@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { type } from 'os';
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -17,6 +18,10 @@ const ProductSchema = new mongoose.Schema(
     imageIds: {
       type: [String], // Array of strings to store Cloudinary image IDs
       default: [], // Default is an empty array
+    },
+    category: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Category',
     },
   },
   { timestamps: true }

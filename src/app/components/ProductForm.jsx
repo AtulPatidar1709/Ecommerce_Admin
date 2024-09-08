@@ -2,7 +2,7 @@
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { AiFillDelete } from 'react-icons/ai'; // Import delete icon
@@ -10,21 +10,39 @@ import Loader from './Loader/page';
 import { ReactSortable } from 'react-sortablejs';
 
 const ProductForm = ({
-  title: existingTitle = '',
-  description: existingDescription = '',
-  price: existingPrice = '',
+  title: existingTitle,
+  description: existingDescription,
+  price: existingPrice,
   _id,
   Heading,
-  imageIds, // Use default empty array if no images prop is provided
+  imageIds,
+  category: existingCategory, // Use default empty array if no images prop is provided
 }) => {
   // Initialize state with props
   const [title, setTitle] = useState(existingTitle || '');
   const [description, setDescription] = useState(existingDescription || '');
+  const [category, setCategory] = useState(existingCategory || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [newimageIds, setNewImageIds] = useState(imageIds || []); // State to hold image IDs from Cloudinary
   const [uploading, setUploading] = useState(false); // State for loading indicator during image upload
+  const [categories, setCategories] = useState([]);
 
   const router = useRouter();
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('/api/categories');
+      if (res.data.categories) {
+        setCategories(res.data.categories);
+      }
+    } catch (error) {
+      toast.error('Error in finding data');
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const saveProduct = async (e) => {
     e.preventDefault();
@@ -38,7 +56,7 @@ const ProductForm = ({
       return toast.error('Please enter a valid price.');
     }
 
-    const data = { title, description, price, imageIds: newimageIds };
+    const data = { title, description, price, imageIds: newimageIds, category };
 
     try {
       let res;
@@ -90,21 +108,62 @@ const ProductForm = ({
     }
   };
 
+  const propertiesToFill = [];
+  if (categories.length > 0 && category) {
+    let catInfo = categories.find(({ _id }) => _id === category);
+    propertiesToFill.push(...catInfo.properties);
+
+    while (catInfo?.parent?.id) {
+      const parentCat = categories.find(
+        ({ _id }) => _id === catInfo?.parent?._id
+      );
+      propertiesToFill.push(...parentCat.properties);
+      catInfo = parentCat;
+    }
+  }
+
   return (
-    <div className="w-full absolute flex flex-col items-start justify-start">
-      <h1 className="font-bold text-2xl">{Heading}</h1>
-      <form onSubmit={saveProduct} className="flex flex-col gap-4">
+    <div className="w-full p-4 flex flex-col items-center justify-center">
+      <h1 className="font-bold text-2xl mb-4 text-center">{Heading}</h1>
+      <form
+        onSubmit={saveProduct}
+        className="w-full max-w-2xl flex flex-col gap-4"
+      >
         <div className="flex flex-col">
-          <label htmlFor="product-name">Product Name</label>
+          <label htmlFor="product-name" className="font-semibold mb-2">
+            Product Name
+          </label>
           <input
             id="product-name"
             onChange={(e) => setTitle(e.target.value)}
             value={title || ''}
             type="text"
             placeholder="Product Name"
+            className="border p-2 rounded-md w-full"
           />
         </div>
-        <div className="w-[100px] h-[100px] border rounded-sm bg-transparent flex flex-col justify-center items-center cursor-pointer">
+        <div className="flex flex-col mb-4">
+          <label htmlFor="category" className="font-semibold mb-2">
+            Category
+          </label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border p-2 rounded-md w-full"
+          >
+            <option value="">Uncategorized</option>
+            {categories.length > 0 &&
+              categories.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+          </select>
+          {propertiesToFill.length > 0 &&
+            propertiesToFill.map((p) => <div key={p._id}>{p.name}</div>)}
+        </div>
+        <div className="w-full border rounded-md bg-transparent flex flex-col justify-center items-center cursor-pointer mb-4">
           <CldUploadWidget
             uploadPreset="ptqeubac"
             onSuccess={handleUploadSuccess} // Handle successful upload
@@ -113,6 +172,7 @@ const ProductForm = ({
               <button
                 type="button" // Ensure it doesn't trigger form submission
                 onClick={() => open()}
+                className="p-4 text-gray-500 hover:text-gray-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +180,7 @@ const ProductForm = ({
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="size-6 text-gray-400"
+                  className="w-8 h-8"
                 >
                   <path
                     strokeLinecap="round"
@@ -132,38 +192,24 @@ const ProductForm = ({
             )}
           </CldUploadWidget>
         </div>
-        <div className="flex flex-row gap-3">
+        <div className="flex flex-wrap gap-4 mb-4">
           {!newimageIds.length && <div>No Photos in this Product</div>}
           {newimageIds.map((id) => (
-            <div key={id} className="relative px-4">
+            <div key={id} className="relative">
               <Image
-                className="object-contain"
+                className="object-cover rounded-md"
                 src={`https://res.cloudinary.com/dryapqold/image/upload/${id}`}
                 alt="Product"
                 width={120}
-                height={0}
+                height={120}
               />
               {/* Delete Icon */}
               <button
                 type="button"
-                className="absolute top-0 right-0 p-1"
+                className="absolute top-0 right-0 p-1 bg-white rounded-full"
                 onClick={() => handleDeleteImage(id)}
               >
-                {/* <AiFillDelete className="text-red-500" /> */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6 text-red-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                  />
-                </svg>
+                <AiFillDelete className="text-red-500 w-6 h-6" />
               </button>
             </div>
           ))}
@@ -174,25 +220,31 @@ const ProductForm = ({
           )}
         </div>
         <div className="flex flex-col">
-          <label htmlFor="product-description">Product Description</label>
+          <label htmlFor="product-description" className="font-semibold mb-2">
+            Product Description
+          </label>
           <textarea
             id="product-description"
             value={description || ''}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Product Description"
+            className="border p-2 rounded-md w-full"
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor="product-price">Product Price</label>
+          <label htmlFor="product-price" className="font-semibold mb-2">
+            Product Price
+          </label>
           <input
             id="product-price"
             type="number"
             onChange={(e) => setPrice(e.target.value)}
             value={price || ''}
             placeholder="Product Price"
+            className="border p-2 rounded-md w-full"
           />
         </div>
-        <button className="btn-primary" type="submit">
+        <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300 w-full">
           Save Product
         </button>
       </form>

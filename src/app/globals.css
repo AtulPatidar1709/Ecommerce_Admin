@@ -13,9 +13,14 @@ textarea {
   outline: none;
 }
 
+option {
+  @apply text-black;
+}
+
 input:focus,
 select:focus {
-  border-color: #007bff;
+  background: white;
+  border-color: #f6faff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
@@ -24,7 +29,58 @@ label {
 }
 
 .btn-primary {
-  @apply text-white py-3 bg-black rounded-md;
+  @apply text-white bg-black rounded-md;
+}
+
+/* Custom global button class */
+.button-custom {
+  display: inline-block;
+  font-family: inherit;
+  width: 5em; /* Reduced width */
+  height: 2em; /* Reduced height */
+  /* padding: 0.4em 0.8em; */
+  line-height: 1.8em; /* Adjusted line height */
+  margin: 10px; /* Reduced margin */
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px solid #560bad;
+  transition: color 0.5s;
+  z-index: 1;
+  font-size: 20px; /* Adjusted font size */
+  border-radius: 4px; /* Adjusted border radius */
+  font-weight: 500;
+  color: #560bad;
+  background-color: white;
+  text-align: center; /* Center text inside the button */
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+}
+
+.button-custom::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  background: #560bad;
+  height: 100px; /* Adjusted height */
+  width: 140px; /* Adjusted width */
+  border-radius: 50%;
+  top: 100%;
+  left: 100%;
+  transition: all 0.7s;
+}
+
+.button-custom:hover {
+  color: #fff;
+}
+
+.button-custom:hover::before {
+  top: -20px; /* Adjusted position */
+  left: -20px; /* Adjusted position */
+}
+
+.button-custom:active::before {
+  background: #3a0ca3;
+  transition: background 0s;
 }
 
 table.basic {

@@ -29,31 +29,35 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
+    <div className="flex flex-col gap-4 p-4 sm:p-6">
+      <div className="flex justify-end">
         <Link
-          className="bg-gray-200 font-semibold rounded-lg py-2 mr-2 px-3"
+          className="bg-gray-200 font-semibold rounded-lg py-2 px-3 hover:bg-gray-300 transition-colors"
           href={'/products/new'}
         >
           Add new Product
         </Link>
       </div>
-      <div>
-        <table className="basic w-full border-collapse border border-gray-200">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
           <thead>
-            <tr >
-              <th className="border border-gray-200 p-2">Product Name</th>
-              <th className="border border-gray-200 p-2">Actions</th>
+            <tr className="bg-gray-50">
+              <th className="border border-gray-200 p-2 text-left text-sm font-semibold text-gray-600">
+                Product Name
+              </th>
+              <th className="border border-gray-200 p-2 text-left text-sm font-semibold text-gray-600">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {Array.isArray(products) &&
               products.map((product) => (
                 <tr key={product._id}>
-                  <td className="border border-gray-200 p-2">
+                  <td className="border border-gray-200 p-2 text-sm">
                     {product.title}
                   </td>
-                  <td className="flex gap-4 p-2">
+                  <td className="flex flex-col sm:flex-row gap-4 p-2 text-sm">
                     <Link
                       className="flex items-center text-blue-500 hover:text-blue-700"
                       href={`/products/edit/${product._id}`}

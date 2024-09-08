@@ -6,15 +6,25 @@ import Image from 'next/image';
 export default function Home() {
   const { data: session } = useSession();
 
-  if (!session) return <p>Please sign in to view your profile.</p>; // Fallback UI
+  // Fallback UI if the user is not signed in
+  if (!session)
+    return (
+      <p className="text-center text-red-500">
+        Please sign in to view your profile.
+      </p>
+    );
 
   const profileImage = session.user.image;
 
   return (
-    <div className="text-blue-300 flex justify-between items-center">
-      <h2>Hello, {session.user.name}</h2>
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white rounded-lg shadow-lg">
+      <h2 className="text-xl text-blue-500 font-bold">
+        Hello, {session.user.name}
+      </h2>
+
+      {/* Profile Section */}
       {profileImage ? (
-        <div className="flex font-bold items-center rounded-full py-1 pl-1 bg-gray-300 text-black gap-2">
+        <div className="flex items-center rounded-full bg-gray-300 p-1 text-black gap-2">
           <Image
             src={profileImage}
             width={40}
@@ -22,10 +32,10 @@ export default function Home() {
             alt="Profile"
             className="rounded-full"
           />
-          <span className="py-1 px-2">{session.user.name}</span>
+          <span className="font-semibold px-2">{session.user.name}</span>
         </div>
       ) : (
-        <p>No profile image available.</p>
+        <p className="text-sm text-gray-500">No profile image available.</p>
       )}
     </div>
   );

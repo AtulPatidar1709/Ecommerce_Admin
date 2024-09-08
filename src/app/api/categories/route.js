@@ -1,13 +1,16 @@
 import { dbConnect } from '@/lib/dbConnect';
 import Category from '@/models/categories';
 import { NextResponse } from 'next/server';
+await dbConnect();
 
 export async function POST(req) {
-  const { name, parentCategory } = await req.json();
+  const { name, parentCategory, properties } = await req.json();
 
-  await dbConnect();
-
-  const categoryDoc = await Category.create({ name, parent: parentCategory });
+  const categoryDoc = await Category.create({
+    name,
+    parent: parentCategory || undefined,
+    properties,
+  });
 
   return NextResponse.json(
     {
@@ -19,13 +22,15 @@ export async function POST(req) {
 }
 
 export async function PUT(req) {
-  const { name, parentCategory, _id } = await req.json();
-
-  await dbConnect();
+  const { name, parentCategory, properties, _id } = await req.json();
 
   const categoryDoc = await Category.updateOne(
     { _id },
-    { name, parent: parentCategory }
+    {
+      name,
+      parent: parentCategory || undefined,
+      properties,
+    }
   );
 
   return NextResponse.json(
@@ -38,8 +43,6 @@ export async function PUT(req) {
 }
 
 export async function GET(req) {
-  await dbConnect();
-
   const categories = await Category.find({}).populate('parent');
 
   return NextResponse.json(
@@ -54,8 +57,6 @@ export async function GET(req) {
 export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
   const _id = searchParams.get('_id');
-
-  await dbConnect();
 
   await Category.deleteOne({ _id });
 

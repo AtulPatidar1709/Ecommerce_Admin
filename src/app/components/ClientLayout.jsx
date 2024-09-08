@@ -12,14 +12,22 @@ export default function ClientLayout({ children }) {
   return (
     <>
       {showHeader ? (
-        <div className="bg-gray-400 w-full min-h-screen flex">
-          <Header />
-          <div className="w-full rounded-tl-lg p-3 mr-2 mt-2 min-h-screen pt-4 bg-white">
+        <div className="flex flex-col lg:flex-row w-full min-h-screen bg-gray-100">
+          {/* Header for larger screens */}
+          <div className="w-full lg:w-1/4 xl:w-1/5 bg-gray-400 p-4 lg:min-h-screen">
+            <Header />
+          </div>
+
+          {/* Main content area */}
+          <div className="w-full lg:w-3/4 xl:w-4/5 p-4 bg-white min-h-screen rounded-tl-lg shadow-lg">
             {children}
           </div>
         </div>
       ) : (
-        <div>{children}</div>
+        // Full-width layout for "sign-in" and "sign-up" pages
+        <div className="w-full min-h-screen flex items-center justify-center p-4">
+          {children}
+        </div>
       )}
     </>
   );
