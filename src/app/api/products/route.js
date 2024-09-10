@@ -6,7 +6,8 @@ import Product from '@/models/products';
 await dbConnect();
 
 export async function POST(req) {
-  const { title, description, price, imageIds, category } = await req.json();
+  const { title, description, price, imageIds, category, properties } =
+    await req.json();
 
   try {
     const productDoc = await Product.create({
@@ -15,6 +16,7 @@ export async function POST(req) {
       price,
       imageIds,
       category, // Add imageIds to the product
+      properties,
     });
 
     return NextResponse.json(
@@ -61,7 +63,7 @@ export async function GET(req) {
 }
 
 export async function PUT(req) {
-  const { title, description, price, _id, imageIds, category } =
+  const { title, description, price, _id, imageIds, category, propertiess } =
     await req.json();
 
   try {
@@ -73,6 +75,7 @@ export async function PUT(req) {
         price,
         imageIds,
         category, // Add imageIds to the update
+        properties,
       }
     );
 

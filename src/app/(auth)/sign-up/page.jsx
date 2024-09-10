@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import axios from "axios";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { FcGoogle } from "react-icons/fc";
+import axios from 'axios';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FcGoogle } from 'react-icons/fc';
 
 const Page = () => {
   const router = useRouter();
 
   const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
+    name: '',
+    email: '',
+    password: '',
   });
 
   const [buttonDisable, setButtonDisable] = useState(false);
@@ -23,15 +23,15 @@ const Page = () => {
   const onSignup = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/api/sign-up", user);
+      const response = await axios.post('/api/sign-up', user);
       if (response.status === 201) {
-        toast.success("User Registered Successfully");
+        toast.success('User Registered Successfully');
         router.push(`/sign-in`);
       } else {
-        toast.error(response.data.message || "Registration failed.");
+        toast.error(response.data.message || 'Registration failed.');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred.");
+      toast.error(error.response?.data?.message || 'An error occurred.');
     }
   };
 
@@ -57,19 +57,19 @@ const Page = () => {
 
   const signupGoogle = async () => {
     try {
-      const googleData = await signIn("google", {
-        callbackUrl: "/profile",
+      const googleData = await signIn('google', {
+        callbackUrl: '/profile',
       });
       // console.log("Google sign-in response:", googleData);
     } catch (error) {
-      toast.error("Failed to sign up with Google.");
-      console.error("Google sign-in error:", error);
+      toast.error('Failed to sign up with Google.');
+      console.error('Google sign-in error:', error);
     }
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-white">
-      <div className=" w-full sm:w-3/4 md:w-2/3 lg:w-1/3 xl:w-1/4  p-4 mx-auto rounded-lg border border-gray-300 bg-white shadow-lg max-w-[90%]">
+    <div className="flex flex-col w-full justify-center items-center h-screen bg-white">
+      <div className=" w-full sm:w-3/4 md:w-2/3 lg:w-1/3 xl:w-1/4  p-4 mx-auto rounded-lg border border-gray-300 bg-white shadow-lg ">
         <form
           onSubmit={onSignup}
           className="flex flex-col w-full gap-4 px-4 sm:px-6 md:px-8 lg:px-10"
@@ -124,12 +124,12 @@ const Page = () => {
             className="w-full py-3 px-5 bg-black text-white rounded-md hover:bg-gray-800"
             disabled={buttonDisable} // Disable button based on buttonDisable state
           >
-            {buttonDisable ? "Please Fill Details" : "CREATE ACCOUNT"}
+            {buttonDisable ? 'Please Fill Details' : 'CREATE ACCOUNT'}
           </button>
           <p className="text-center pt-6 text-sm sm:text-base">
             <span className="font-normal">Have an Account? </span>
             <Link
-              href={"/sign-in"}
+              href={'/sign-in'}
               className="text-black font-bold hover:underline"
             >
               LOGIN

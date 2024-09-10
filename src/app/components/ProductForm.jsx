@@ -17,11 +17,15 @@ const ProductForm = ({
   Heading,
   imageIds,
   category: existingCategory, // Use default empty array if no images prop is provided
+  properties: assignedProperties,
 }) => {
   // Initialize state with props
   const [title, setTitle] = useState(existingTitle || '');
   const [description, setDescription] = useState(existingDescription || '');
   const [category, setCategory] = useState(existingCategory || '');
+  const [productProperties, setProductProperties] = useState(
+    assignedProperties || {}
+  );
   const [price, setPrice] = useState(existingPrice || '');
   const [newimageIds, setNewImageIds] = useState(imageIds || []); // State to hold image IDs from Cloudinary
   const [uploading, setUploading] = useState(false); // State for loading indicator during image upload
@@ -56,7 +60,14 @@ const ProductForm = ({
       return toast.error('Please enter a valid price.');
     }
 
-    const data = { title, description, price, imageIds: newimageIds, category };
+    const data = {
+      title,
+      description,
+      price,
+      imageIds: newimageIds,
+      category,
+      properties: productProperties,
+    };
 
     try {
       let res;
@@ -108,12 +119,20 @@ const ProductForm = ({
     }
   };
 
+  const setProductProps = (propName, value) => {
+    setProductProperties((prev) => {
+      const newProductProps = { ...prev };
+      newProductProps[propName] = value;
+      return newProductProps;
+    });
+  };
+
   const propertiesToFill = [];
   if (categories.length > 0 && category) {
     let catInfo = categories.find(({ _id }) => _id === category);
     propertiesToFill.push(...catInfo.properties);
 
-    while (catInfo?.parent?.id) {
+    while (catInfo?.parent?._id) {
       const parentCat = categories.find(
         ({ _id }) => _id === catInfo?.parent?._id
       );
@@ -161,7 +180,21 @@ const ProductForm = ({
               ))}
           </select>
           {propertiesToFill.length > 0 &&
-            propertiesToFill.map((p) => <div key={p._id}>{p.name}</div>)}
+            propertiesToFill.map((p) => (
+              <div key={p._id}>
+                <div>{p.name}</div>
+                <select
+                  value={productProperties[p.name]}
+                  onChange={(ev) => setProductProps(p.name, ev.target.value)}
+                >
+                  {p.values.map((v) => (
+                    <option key={v._id} value={v}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
         </div>
         <div className="w-full border rounded-md bg-transparent flex flex-col justify-center items-center cursor-pointer mb-4">
           <CldUploadWidget

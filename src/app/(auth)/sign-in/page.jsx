@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { signIn } from "next-auth/react";
-import { FcGoogle } from "react-icons/fc";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
+import { FcGoogle } from 'react-icons/fc';
 
 const Page = () => {
   const router = useRouter();
 
   const [user, setUser] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const [buttonDisable, setButtonDisable] = useState(true);
@@ -23,7 +23,7 @@ const Page = () => {
 
     try {
       setLoading(true);
-      const response = await signIn("credentials", {
+      const response = await signIn('credentials', {
         email: user.email,
         password: user.password,
         redirect: false,
@@ -32,14 +32,14 @@ const Page = () => {
       // console.log("SignIn response:", response);
 
       if (response?.ok) {
-        router.push("/profile");
-        toast.success("Logged In Successfully");
+        router.push('/');
+        toast.success('Logged In Successfully');
       } else {
-        toast.error(response?.error || "Something Went Wrong");
+        toast.error(response?.error || 'Something Went Wrong');
       }
     } catch (error) {
       toast.error(
-        "Something Went Wrong: " + (error.message || "Unknown error")
+        'Something Went Wrong: ' + (error.message || 'Unknown error')
       );
       // console.error("Error in Frontend:", error);
     } finally {
@@ -61,17 +61,17 @@ const Page = () => {
 
   const signupGoogle = async () => {
     try {
-      const googleData = await signIn("google", {
-        callbackUrl: "/",
+      const googleData = await signIn('google', {
+        callbackUrl: '/',
       });
     } catch (error) {
-      toast.error("Failed to sign up with Google.");
+      toast.error('Failed to sign up with Google.');
       // console.error("Google sign-in error:", error);
     }
   };
 
   return (
-    <div className="p-4 flex flex-col justify-center items-center h-[80vh] bg-white">
+    <div className="p-4 flex flex-col justify-center items-center w-full bg-white">
       <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 max-w-md p-6 rounded-lg border border-gray-300 bg-white shadow-lg">
         <div className="flex flex-col items-center mb-6">
           <h1 className="text-2xl font-bold mb-2">Login</h1>
@@ -114,16 +114,16 @@ const Page = () => {
             className="w-full py-3 px-5 bg-black text-white rounded-md hover:bg-gray-800 mt-4"
             disabled={buttonDisable}
           >
-            {buttonDisable ? "Please Enter all Fields" : "Log In"}
+            {buttonDisable ? 'Please Enter all Fields' : 'Log In'}
           </button>
         </form>
         <div className="w-full h-px bg-gray-300 my-4"></div>
         <p className="text-center text-base">
           <span className="font-inter font-normal">
-            Don’t have an Account?{" "}
+            Don’t have an Account?{' '}
           </span>
           <Link
-            href={"/sign-up"}
+            href={'/sign-up'}
             className="text-black font-bold hover:underline"
           >
             SIGN UP

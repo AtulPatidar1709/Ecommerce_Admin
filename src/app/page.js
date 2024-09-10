@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
+const dummyImage = '/assets/images/dummyprofile.png';
+
 export default function Home() {
   const { data: session } = useSession();
 
@@ -14,7 +16,7 @@ export default function Home() {
       </p>
     );
 
-  const profileImage = session.user.image;
+  const profileImage = session.user.image || dummyImage;
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white rounded-lg shadow-lg">
